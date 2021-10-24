@@ -1,12 +1,15 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import * as themeSelectors from '../utils/themes'
 
 export default function dashboard({ config }) {
   const session = useSession()
+  const picpayHandleInputRef = useRef(null)
+  const [error, setError] = useState('')
   const [picpayHandle, setPicpayHandle] = useState(config.picpayHandle)
   const [value, setValue] = useState(config.value)
+  const [title, setTitle] = useState(config.title)
   const [message, setMessage] = useState(config.message)
   const [theme, setTheme] = useState(config.theme)
   const themes = ['pink', 'yellow', 'purple']
@@ -37,7 +40,12 @@ export default function dashboard({ config }) {
                 </label>
                 <div className="mt-2 flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-3 rounded-l-md border-2 border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">@</span>
-                  <input type="text" name="picpayHandle" id="picpayHandle" autoComplete="picpayHandle" className="flex-1 focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300 p-2" value={picpayHandle} onChange={e => setPicpayHandle(e.target.value)}/>
+                  <input type="text" name="picpayHandle" id="picpayHandle" autoComplete="picpayHandle" className="flex-1 focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300 p-2" ref={picpayHandleInputRef} value={picpayHandle}
+                     onChange={e => {
+                       setPicpayHandle(e.target.value)
+                       if (e.target.value) setError('')
+                     }}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-gray-500">
                   Esse é seu nome de usuário cadastrado no Picpay. Certifique-se de colocar o nome correto para que os pagamentos caiam no lugar certo.
@@ -56,6 +64,14 @@ export default function dashboard({ config }) {
                 <p className="mt-2 text-xs text-gray-500">
                   Você tem a opção de especificar o valor que deseja receber.
                 </p>
+              </div>
+              <div className="mt-6 sm:col-span-12">
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                  Título
+                </label>
+                <div className="mt-2 flex rounded-md shadow-sm">
+                  <input name="title" id="title" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Um título daora" value={title} onChange={e => setTitle(e.target.value)} />
+                </div>
               </div>
               <div className="mt-6 sm:col-span-12">
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700">
@@ -94,13 +110,17 @@ export default function dashboard({ config }) {
               type="button"
               className="px-4 py-2 rounded-md bg-green-500 text-gray-100"
               onClick={async () => {
+                if (!picpayHandle) {
+                  setError('Tá faltando o nome de usuário no Picpay')
+                  return 
+                }
                 const response = await fetch('https://fmilani-mepaga.builtwithdark.com/config', {
                   method: 'POST',
                   headers: {
                     'Authorization': `Bearer ${session.data.accessToken}`,
                     'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({ picpayHandle, value: Number(value), message, theme }),
+                  body: JSON.stringify({ picpayHandle, value: Number(value), title, message, theme }),
                 })
                 if (response.status !== 200) alert('Algo deu errado.')
               }}
@@ -109,6 +129,32 @@ export default function dashboard({ config }) {
             </button>
           </div>
         </div>
+        { error &&
+        <div className="p-6 sticky bottom-0 border-t-4 border-red-300 bg-red-50 shadow-2xl">
+          <div className="flex flex-auto sm:items-center">
+            <div className="max-w-prose sm:pr-4">
+              <p className="text-xs text-red-800">
+                {error}
+              </p>
+            </div>
+            <div className="items-end sm:w-1/2">
+              <button
+                type="button"
+                className="block w-full items-center p-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-100 bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 focus:bg-red-700"
+                onClick={() => {
+                  picpayHandleInputRef.current.focus()
+                  window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth',
+                  })
+                }}
+              >
+                Corrigir
+              </button>
+            </div>
+          </div>
+        </div>
+        }
       </main>
       <footer>
       </footer>
