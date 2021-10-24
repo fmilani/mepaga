@@ -7,8 +7,10 @@
   },
   "dependencies": {
     "next": "latest",
+    "next-auth": "4.0.0-beta.4",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "tailwindcss-neumorphism": "^0.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.6",
