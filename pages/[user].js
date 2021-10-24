@@ -19,7 +19,7 @@ export default function User({ config }) {
           <div className="max-w-screen-sm w-full m-auto mt-12">
               <button
                 type="button"
-                className={`w-full py-6 text-lg text-gray-100 ${themes.nmFlatSelector(config.theme)} rounded-3xl ${themes.nmActiveSelector(config.theme)}`}
+                className={`w-full py-6 text-lg text-gray-100 active:outline-none ${themes.nmFlatSelector(config.theme)} rounded-3xl ${themes.nmActiveSelector(config.theme)}`}
                 onClick={() => router.push(`https://picpay.me/${config.picpayHandle}/${config.value}`)}
               >
                 Pagar {config.value}
