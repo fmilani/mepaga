@@ -53,6 +53,7 @@ export async function getServerSideProps({ query }) {
   const res = await fetch(`https://fmilani-mepaga.builtwithdark.com/${query.user}/config`, {
     method: 'GET',
   })
+  if (res.status === 404) return { notFound: true }
   const config = await res.json()
   return {
     props: { config }
