@@ -14,8 +14,15 @@ export default function User({ config }) {
       <div className={`${themes.bgSelector(config.theme)} min-h-screen h-full w-full flex flex-col items-center`}>
         <div className="justify-center px-4 m-auto block w-full">
           <main className={`w-full max-w-screen-sm m-auto p-8 ${themes.nmInsetSelector(config.theme)} rounded-3xl`}>
-            <div className="pb-12">
-              <p className="text-xl font-bold text-gray-100">{config.title}</p>
+            <div className="pb-10 flex items-start">
+              {config.picture &&
+              <div>
+                <img class="inline-block h-9 w-9 rounded-full" src={config.picture} alt="foto do perfil" />
+              </div>
+              }
+              <div className="ml-3 flex-1">
+                <p className="text-xl font-bold text-gray-100">{config.title}</p>
+              </div>
             </div>
             <div className="whitespace-pre-line text-lg font-medium text-gray-100">{config.message}</div>
           </main>
