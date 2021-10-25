@@ -17,7 +17,7 @@ export default function User({ config }) {
             <div className="pb-10 flex items-start">
               {config.picture &&
               <div>
-                <img class="inline-block h-9 w-9 rounded-full" src={config.picture} alt="foto do perfil" />
+                <img className="inline-block h-9 w-9 rounded-full" src={config.picture} alt="foto do perfil" />
               </div>
               }
               <div className="ml-3 flex-1">

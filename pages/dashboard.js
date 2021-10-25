@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useState, useRef } from 'react'
 import { getSession, useSession } from 'next-auth/react'
 import * as themeSelectors from '../utils/themes'
+import Link from 'next/link'
 
 export default function dashboard({ config }) {
   const session = useSession()
@@ -12,6 +13,7 @@ export default function dashboard({ config }) {
   const [title, setTitle] = useState(config.title)
   const [message, setMessage] = useState(config.message)
   const [theme, setTheme] = useState(config.theme)
+  const [savedConfig, setSavedConfig] = useState(config)
   const themes = ['pink', 'yellow', 'purple']
 
   return (
@@ -21,8 +23,24 @@ export default function dashboard({ config }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <nav className="shadow sticky top-0 w-full z-50">
-        Header
+      <nav className="shadow sticky top-0 w-full z-50 bg-white">
+        <div className="flex items-center justify-between px-4 h-16">
+          <Link href="/">
+            <a className="text-2xl font-bold">
+              mepaga
+            </a>
+          </Link>
+          {
+            config.picpayHandle || savedConfig.picpayHandle
+            ? (<button
+              type="button"
+              className={`px-4 py-2 rounded-md text-gray-100 ${themeSelectors.bgSelector(theme)}`}
+            >
+              <a href={`/${config.picpayHandle || savedConfig.picpayHandle}`} target="_blank">Ver sua página</a>
+            </button>)
+            : ""
+          }
+        </div>
       </nav>
       <main className="p-4 max-w-lg mx-auto">
         <div className="flex flex-col justify-between shadow-lg rounded-md">
@@ -123,6 +141,8 @@ export default function dashboard({ config }) {
                   body: JSON.stringify({ picpayHandle, value: Number(value), title, message, theme }),
                 })
                 if (response.status !== 200) alert('Algo deu errado.')
+                const data = await response.json()
+                setSavedConfig(data)
               }}
             >
               Salvar
