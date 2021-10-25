@@ -19,7 +19,7 @@ function Component() {
       Clica no botão de Login pra começar<br />
       <button
         className="mt-4 px-4 py-2 rounded-md bg-red-500 text-white"
-        onClick={() => signIn()}
+        onClick={() => signIn('google', { callbackUrl: `${window.location.origin}/dashboard` })}
       >
         Login com google
       </button>
@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
-        <title>Create Next App</title>
+        <title>mepaga</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
