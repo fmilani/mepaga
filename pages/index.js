@@ -8,16 +8,21 @@ function Component() {
   if (session) {
     return (
       <>
-        Signed in as {session.user.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-        <button onClick={() => router.push('/dashboard')}>Dashboard</button>
+        Oi, {session.user.name} <br />
+        <button className="mt-4 px-4 py-2 rounded-md bg-green-500 text-white" onClick={() => router.push('/dashboard')}>Personalizar sua página</button>
+        <button className="mt-8 px-4 py-2 rounded-md bg-red-500 text-white" onClick={() => signOut()}>Sign out</button>
       </>
     )
   }
   return (
     <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
+      Clica no botão de Login pra começar<br />
+      <button
+        className="mt-4 px-4 py-2 rounded-md bg-red-500 text-white"
+        onClick={() => signIn()}
+      >
+        Login com google
+      </button>
     </>
   )
 }
