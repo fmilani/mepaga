@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useState, useRef } from 'react'
-import { getSession, useSession } from 'next-auth/react'
+import { getSession, useSession, signOut } from 'next-auth/react'
 import * as themeSelectors from '../utils/themes'
 import Link from 'next/link'
 
@@ -177,6 +177,7 @@ export default function dashboard({ config }) {
         }
       </main>
       <footer>
+        <div className="float-right px-4 py-2"><button onClick={() => signOut()}>sair</button></div>
       </footer>
     </>
   )
