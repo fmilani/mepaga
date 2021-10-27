@@ -77,7 +77,11 @@ export default function dashboard({ config }) {
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 sm:text-sm">$</span>
                   </div>
-                  <input type="number" pattern="[0-9]*" inputMode="numeric" name="amount" id="amount" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" placeholder="0.00" aria-describedby="price-currency" value={value} onChange={e => setValue(e.target.value)} />
+                  <input type="number" pattern="[0-9]*" min="0.0" inputMode="numeric" name="amount" id="amount" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" placeholder="0.00" aria-describedby="price-currency" value={value}
+                    onChange={e => {
+                      setValue(e.target.value)
+                    }}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-gray-500">
                   Você tem a opção de especificar o valor que deseja receber.

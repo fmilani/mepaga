@@ -32,7 +32,7 @@ export default function User({ config }) {
                 className={`w-full py-6 text-lg text-gray-100 active:outline-none ${themes.nmFlatSelector(config.theme)} rounded-3xl ${themes.nmActiveSelector(config.theme)}`}
                 onClick={() => router.push(`https://picpay.me/${config.picpayHandle}/${config.value}`)}
               >
-                Pagar R$ {config.value}
+                {config.value ? `Pagar R$${config.value}` : "Pagar"}
               </button>
           </div>
         </div>
