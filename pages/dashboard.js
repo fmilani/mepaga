@@ -12,6 +12,7 @@ export default function dashboard({ config }) {
   const [value, setValue] = useState(config.value)
   const [title, setTitle] = useState(config.title)
   const [message, setMessage] = useState(config.message)
+  const [buttonText, setButtonText] = useState(config.buttonText)
   const [theme, setTheme] = useState(config.theme)
   const [savedConfig, setSavedConfig] = useState(config)
   const themes = ['pink', 'yellow', 'purple']
@@ -34,7 +35,7 @@ export default function dashboard({ config }) {
             config.picpayHandle || savedConfig.picpayHandle
             ? (<button
               type="button"
-              className={`px-4 py-2 rounded-md text-gray-100 ${themeSelectors.bgSelector(theme)}`}
+              className={`px-4 py-2 rounded-md text-white ${themeSelectors.bgSelector(theme)}`}
             >
               <a href={`/${config.picpayHandle || savedConfig.picpayHandle}`} target="_blank">Ver sua página</a>
             </button>)
@@ -104,6 +105,17 @@ export default function dashboard({ config }) {
                   </textarea>
                 </div>
               </div>
+              <div className="mt-6 sm:col-span-12">
+                <label htmlFor="buttonText" className="block text-sm font-medium text-gray-700">
+                  Texto do Botão<span className="ml-1 text-gray-400">(Opcional)</span>
+                </label>
+                <div className="mt-2 flex rounded-md shadow-sm">
+                  <input name="buttonText" id="buttonText" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Pagar R$1,99" value={buttonText} onChange={e => setButtonText(e.target.value)} />
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  {`Se deixar em branco, o texto do botão vai ser "Pagar R$<valor>"`}
+                </p>
+              </div>
             </div>
             <div className="py-6">
               <div className="sm:col-span-12">
@@ -130,7 +142,7 @@ export default function dashboard({ config }) {
           <div className="mx-auto py-6">
             <button
               type="button"
-              className="px-4 py-2 rounded-md bg-green-500 text-gray-100"
+              className="px-4 py-2 rounded-md text-white bg-gradient-to-r from-pink-700 to-purple-700"
               onClick={async () => {
                 if (!picpayHandle) {
                   setError('Tá faltando o nome de usuário no Picpay')
@@ -142,7 +154,7 @@ export default function dashboard({ config }) {
                     'Authorization': `Bearer ${session.data.accessToken}`,
                     'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({ picpayHandle, value: Number(value), title, message, theme }),
+                  body: JSON.stringify({ picpayHandle, value: Number(value), title, message, buttonText, theme }),
                 })
                 if (response.status !== 200) alert('Algo deu errado.')
                 const data = await response.json()
@@ -164,7 +176,7 @@ export default function dashboard({ config }) {
             <div className="items-end sm:w-1/2">
               <button
                 type="button"
-                className="block w-full items-center p-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-100 bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 focus:bg-red-700"
+                className="block w-full items-center p-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 focus:bg-red-700"
                 onClick={() => {
                   picpayHandleInputRef.current.focus()
                   window.scrollTo({
