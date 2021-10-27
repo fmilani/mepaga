@@ -8,6 +8,7 @@ export default function dashboard({ config }) {
   const session = useSession()
   const picpayHandleInputRef = useRef(null)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [picpayHandle, setPicpayHandle] = useState(config.picpayHandle)
   const [value, setValue] = useState(config.value)
   const [title, setTitle] = useState(config.title)
@@ -148,6 +149,7 @@ export default function dashboard({ config }) {
                   setError('Tá faltando o nome de usuário no Picpay')
                   return 
                 }
+                setLoading(true)
                 const response = await fetch('https://fmilani-mepaga.builtwithdark.com/config', {
                   method: 'POST',
                   headers: {
@@ -156,12 +158,14 @@ export default function dashboard({ config }) {
                   },
                   body: JSON.stringify({ picpayHandle, value: Number(value), title, message, buttonText, theme }),
                 })
+                setLoading(false)
                 if (response.status !== 200) alert('Algo deu errado.')
                 const data = await response.json()
                 setSavedConfig(data)
               }}
+              disabled={loading}
             >
-              Salvar
+              {loading ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
         </div>
