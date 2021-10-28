@@ -9,6 +9,7 @@ export default function dashboard({ config }) {
   const picpayHandleInputRef = useRef(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [unsavedChanges, setUnsavedChanges] = useState(false)
   const [picpayHandle, setPicpayHandle] = useState(config.picpayHandle)
   const [value, setValue] = useState(config.value)
   const [title, setTitle] = useState(config.title)
@@ -17,6 +18,10 @@ export default function dashboard({ config }) {
   const [theme, setTheme] = useState(config.theme)
   const [savedConfig, setSavedConfig] = useState(config)
   const themes = ['pink', 'yellow', 'purple']
+
+  const changeMade= (input) => {
+    setUnsavedChanges(savedConfig[input.name] !== input.value)
+  }
 
   return (
     <>
@@ -32,16 +37,43 @@ export default function dashboard({ config }) {
               mepaga
             </a>
           </Link>
+          <div>
           {
-            config.picpayHandle || savedConfig.picpayHandle
+            config.picpayHandle || savedConfig.picpayHandle || unsavedChanges
             ? (<button
               type="button"
               className={`px-4 py-2 rounded-md text-white ${themeSelectors.bgSelector(theme)}`}
+              onClick={async () => {
+                if (!unsavedChanges) return
+
+                if (!picpayHandle) {
+                  setError('Tá faltando o nome de usuário no Picpay')
+                  return 
+                }
+                setLoading(true)
+                const response = await fetch('https://fmilani-mepaga.builtwithdark.com/config', {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${session.data.accessToken}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ picpayHandle, value: Number(value), title, message, buttonText, theme }),
+                })
+                setLoading(false)
+                if (response.status !== 200) alert('Algo deu errado.')
+                const data = await response.json()
+                setSavedConfig(data)
+                setUnsavedChanges(false)
+              }}
             >
-              <a href={`/${config.picpayHandle || savedConfig.picpayHandle}`} target="_blank">Ver sua página</a>
+              {
+                unsavedChanges ? `${loading ? 'Salvando...' : 'Salvar'}` : <a href={`/${config.picpayHandle || savedConfig.picpayHandle}`} target="_blank">Ver sua página</a>
+
+              }
             </button>)
             : ""
           }
+          </div>
         </div>
       </nav>
       <main className="p-4 max-w-lg mx-auto">
@@ -63,6 +95,7 @@ export default function dashboard({ config }) {
                   <input type="text" name="picpayHandle" id="picpayHandle" autoComplete="picpayHandle" className="flex-1 focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300 p-2" ref={picpayHandleInputRef} value={picpayHandle}
                      onChange={e => {
                        setPicpayHandle(e.target.value)
+                       changeMade(e.target)
                        if (e.target.value) setError('')
                      }}
                   />
@@ -82,6 +115,7 @@ export default function dashboard({ config }) {
                   <input type="number" pattern="[0-9]*" min="0.0" inputMode="numeric" name="amount" id="amount" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2" placeholder="0.00" aria-describedby="price-currency" value={value}
                     onChange={e => {
                       setValue(e.target.value)
+                      changeMade(e.target)
                     }}
                   />
                 </div>
@@ -94,7 +128,12 @@ export default function dashboard({ config }) {
                   Título
                 </label>
                 <div className="mt-2 flex rounded-md shadow-sm">
-                  <input name="title" id="title" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Um título daora" value={title} onChange={e => setTitle(e.target.value)} />
+                  <input name="title" id="title" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Um título daora" value={title}
+                    onChange={e => {
+                      setTitle(e.target.value)
+                      changeMade(e.target)
+                    }}
+                  />
                 </div>
               </div>
               <div className="mt-6 sm:col-span-12">
@@ -102,7 +141,12 @@ export default function dashboard({ config }) {
                   Mensagem
                 </label>
                 <div className="mt-2">
-                  <textarea id="message" name="message" rows="5" className="max-w-lg shadow-sm block w-full focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 sm:text-sm border-gray-300 rounded-md p-2" value={message} onChange={e => setMessage(e.target.value)}>
+                  <textarea id="message" name="message" rows="5" className="max-w-lg shadow-sm block w-full focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 sm:text-sm border-gray-300 rounded-md p-2" value={message} 
+                    onChange={e => {
+                      setMessage(e.target.value)
+                      changeMade(e.target)
+                    }}
+                  >
                   </textarea>
                 </div>
               </div>
@@ -111,7 +155,12 @@ export default function dashboard({ config }) {
                   Texto do Botão<span className="ml-1 text-gray-400">(Opcional)</span>
                 </label>
                 <div className="mt-2 flex rounded-md shadow-sm">
-                  <input name="buttonText" id="buttonText" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Pagar R$1,99" value={buttonText} onChange={e => setButtonText(e.target.value)} />
+                  <input name="buttonText" id="buttonText" className="focus:outline-none focus:ring-blue-500 border-2 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md p-2" placeholder="Pagar R$1,99" value={buttonText}
+                    onChange={e => {
+                      setButtonText(e.target.value)
+                      changeMade(e.target)
+                    }}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-gray-500">
                   {`Se deixar em branco, o texto do botão vai ser "Pagar R$<valor>"`}
@@ -132,41 +181,16 @@ export default function dashboard({ config }) {
                         <button
                           key={t}
                           type="button"
-                          onClick={() => setTheme(t)}
+                          onClick={() => {
+                            setTheme(t)
+                            changeMade({name: 'theme', value: t})
+                          }}
                           className={`${themeSelectors.bgSelector(t)} p-6 border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${theme === t ? 'ring-2 ring-offset-2 ring-green-500' : null}`}></button>
                       ))
                     }
                 </div>
               </div>
             </div>
-          </div>
-          <div className="mx-auto py-6">
-            <button
-              type="button"
-              className="px-4 py-2 rounded-md text-white bg-gradient-to-r from-pink-700 to-purple-700"
-              onClick={async () => {
-                if (!picpayHandle) {
-                  setError('Tá faltando o nome de usuário no Picpay')
-                  return 
-                }
-                setLoading(true)
-                const response = await fetch('https://fmilani-mepaga.builtwithdark.com/config', {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${session.data.accessToken}`,
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ picpayHandle, value: Number(value), title, message, buttonText, theme }),
-                })
-                setLoading(false)
-                if (response.status !== 200) alert('Algo deu errado.')
-                const data = await response.json()
-                setSavedConfig(data)
-              }}
-              disabled={loading}
-            >
-              {loading ? 'Salvando...' : 'Salvar'}
-            </button>
           </div>
         </div>
         { error &&
